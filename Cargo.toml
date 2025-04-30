@@ -1,5 +1,5 @@
 [package]
-name = "secure-squad"
+name = "secure-squads"
 version = "0.1.0"
 edition = "2024"
 
@@ -35,5 +35,5 @@ serde_json = "1.0.140"
 bincode = "2.0.1"
 
 [[bin]]
-name = "secure-squad"
+name = "secure-squads"
 path = "src/main.rs"
