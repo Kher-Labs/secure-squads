@@ -1,4 +1,5 @@
-# Squads V4 CLI
+# Secure-Squads
+A fork of squads-v4 cli for advance tx parsing
 
 The following is an overview of commands available to interact with the Squads V4 program via CLI.
 
@@ -7,12 +8,9 @@ Overview
 1. [Installation](#1-installation)
 2. [Supported wallets](#2-supported-wallets)
 3. [Commands](#3-commands)
-   - [Create config transaction](#config-transaction-create)
-   - [Execute config transaction](#config-transaction-execute)
    - [Create multisig](#multisig-create)
    - [Vote on proposals](#proposal-vote)
    - [Reclaim Vault Transaction rent](#vault-transaction-accounts-close)
-   - [Create new Vault Transaction](#vault-transaction-create)
    - [Execute Vault Transaction](#vault-transaction-execute)
 
 # 1. Installation
@@ -23,7 +21,7 @@ For this an installation of Rust will be needed. You can find installation steps
 Now, install the Squads CLI.
 
 ```bash
-cargo install squads-multisig-cli
+cargo install secure-squads
 ```
 
 # 2. Supported wallets
@@ -35,7 +33,7 @@ The Squads CLI has exactly the same wallet support as the Solana CLI, meaning it
 You can easily use your local filesystem wallet by using it as the "keypair" argument in commands.
 
 ```bash
-squads-multisig-cli example-command --keypair /path/to/keypair.json
+secure-squads example-command --keypair /path/to/keypair.json
 ```
 
 This specifies the path of the Keypair that you want to use to sign a CLI transaction.
@@ -45,124 +43,18 @@ This specifies the path of the Keypair that you want to use to sign a CLI transa
 To use a Ledger with the Squads CLI, just specify the Ledger device URL in the "keypair" argument.
 
 ```bash
-squads-multisig-cli example-command --keypair usb://ledger
+secure-squads example-command --keypair usb://ledger
 ```
 
 This will use the default derivation path of your Ledger.
 
 ```bash
-squads-multisig-cli example-command --keypair usb://ledger/BsNsvfXqQTtJnagwFWdBS7FBXgnsK8VZ5CmuznN85swK?key=0/0
+secure-squads example-command --keypair usb://ledger/BsNsvfXqQTtJnagwFWdBS7FBXgnsK8VZ5CmuznN85swK?key=0/0
 ```
 
 This specifies a custom derivation path. You can read more about it [here](https://docs.solana.com/wallet-guide/hardware-wallets/ledger).
 
 # 3. Commands
-
-## Config Transaction Create
-
-### Description
-
-Creates a new configuration proposal transaction for a specific action.
-
-### Syntax
-
-```bash
-config-transaction-create --rpc-url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_PATH> --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action <ACTION> [--memo <MEMO>]
-```
-
-### Parameters
-
-- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
-- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
-- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
-- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
-- `--action <ACTION>`: The action to execute. Format depends on the action type.
-- `--memo <MEMO>`: (Optional) A memo for the transaction.
-
-### Examples
-
-1. **Add a New Member:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "AddMember <NEW_MEMBER_PUBLIC_KEY> <PERMISSIONS>"
-   ```
-
-   Adds a new member to the multisig configuration with specified permissions.
-   Permissions:
-   1: Initiate only
-   7: All permissions (Initiate, Approve, Execute)
-
-2. **Remove a Member:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "RemoveMember <MEMBER_PUBLIC_KEY>"
-   ```
-
-   Removes an existing member from the multisig configuration.
-
-3. **Change Threshold:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "ChangeThreshold <NEW_THRESHOLD>"
-   ```
-
-   Changes the threshold number of signatures required for executing multisig transactions.
-
-4. **Set Time Lock:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "SetTimeLock <TIME_LOCK_VALUE>"
-   ```
-
-   Sets a time lock for the multisig account.
-
-5. **Add Spending Limit:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "AddSpendingLimit <CREATE_KEY> <VAULT_INDEX> <MINT> <AMOUNT> <PERIOD> <MEMBERS> <DESTINATIONS>"
-   ```
-
-   Adds a spending limit to the multisig account.
-
-6. **Remove Spending Limit:**
-
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "RemoveSpendingLimit <SPENDING_LIMIT_PUBKEY>"
-   ```
-
-   Removes an existing spending limit from the multisig account.
-
-7. **Set Rent Collector:**
-   ```bash
-   config-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --action "SetRentCollector <NEW_RENT_COLLECTOR_PUBKEY>"
-   ```
-   Sets a new rent collector for the multisig account.
-
-## Config Transaction Execute
-
-### Description
-
-Executes a proposed transaction for a multisig configuration change. This command is used to execute configuration transactions once they have reached threshold.
-
-### Syntax
-
-```bash
-config-transaction-execute --rpc-url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_PATH> --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index <TRANSACTION_INDEX>
-```
-
-### Parameters
-
-- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
-- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
-- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
-- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
-- `--transaction-index <TRANSACTION_INDEX>`: The index of the transaction to be executed.
-
-### Example Usage
-
-```bash
-config-transaction-execute --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index 1
-```
 
 ## Multisig Create
 
@@ -284,36 +176,6 @@ vault-transaction-accounts-close --keypair /path/to/keypair.json --multisig-pubk
 ```
 
 In this example, the command closes the transaction accounts for the transaction at index 1 in the specified multisig account and collects rent using the provided rent collector public key.
-
-## Vault Transaction Create
-
-### Description
-
-Creates a new vault transaction with a custom transaction message.
-
-### Syntax
-
-```bash
-vault-transaction-create --rpc-url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_PATH> --multisig-pubkey <MULTISIG_PUBLIC_KEY> --vault-index <VAULT_INDEX> --transaction-message <TRANSACTION_MESSAGE> [--memo <MEMO>]
-```
-
-### Parameters
-
-- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
-- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
-- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
-- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
-- `--vault-index <VAULT_INDEX>`: The index of the vault where the transaction is being created.
-- `--transaction-message <TRANSACTION_MESSAGE>`: The message or payload of the transaction.
-- `--memo <MEMO>`: (Optional) A memo for the transaction.
-
-### Example Usage
-
-```bash
-vault-transaction-create --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --vault-index 1 --transaction-message [1, 2, 3, 5, 5, 6, 7, 8]
-```
-
-In this example, a new transaction with the specified message is proposed in the multisig vault at vault index 1.
 
 ## Vault Transaction Execute
 
