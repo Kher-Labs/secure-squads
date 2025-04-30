@@ -1,5 +1,5 @@
 # Secure-Squads
-A fork of squads-v4 cli for advance tx parsing
+A cli for secure interations with squads-v4
 
 The following is an overview of commands available to interact with the Squads V4 program via CLI.
 
