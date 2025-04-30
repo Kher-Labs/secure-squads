@@ -57,6 +57,7 @@ This specifies a custom derivation path. You can read more about it [here](https
 # 3. Commands
 
 ## Multisig Create
+![Screenshot From 2025-04-30 23-54-54](https://github.com/user-attachments/assets/9f2c3f50-aab3-49ea-8cd1-5d25d2cd0a68)
 
 ### Description
 
