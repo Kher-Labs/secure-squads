@@ -1,0 +1,25 @@
+use clap::Parser;
+use command::Command;
+mod command;
+mod squads_decoder;
+pub mod utils;
+
+#[derive(Parser)]
+struct App {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let app = App::parse();
+
+    match app.command {
+        Command::MultisigCreate(command) => command.execute().await,
+        Command::DisplayVault(command) => command.execute().await,
+        Command::InitiateTransfer(command) => command.execute().await,
+        Command::ProposalVote(command) => command.execute().await,
+        Command::VaultTransactionExecute(command) => command.execute().await,
+        Command::VaultTransactionAccountsClose(command) => command.execute().await,
+    }
+}
