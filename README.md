@@ -9,9 +9,10 @@ Overview
 2. [Supported wallets](#2-supported-wallets)
 3. [Commands](#3-commands)
    - [Create multisig](#multisig-create)
+   - [Initiate Transfer](#initiate-transfer)
    - [Vote on proposals](#proposal-vote)
-   - [Reclaim Vault Transaction rent](#vault-transaction-accounts-close)
    - [Execute Vault Transaction](#vault-transaction-execute)
+   - [Reclaim Vault Transaction rent](#vault-transaction-accounts-close)
 
 # 1. Installation
 
@@ -335,7 +336,8 @@ proposal-vote --rpc_url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_P
    ```
    Cancels the transaction at index 1 in the multisig account.
 
-   ```console
+
+ ```console
    
 RPC Cluster URL:   https://api.devnet.solana.com
 Program ID:        SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
@@ -379,7 +381,84 @@ Do you want to proceed? yes
 
 ✅ Casted ap vote. Signature: 42hDTuzRDPQoSeCXQHdr6QnsUiUN7T85y6zAn8h9XEcArhrdgTsoaDzF3qtkHomPNhU35SL6nWt7HdviNTDSg9fe
 
-   ```
+```
+
+## Vault Transaction Execute
+
+### Description
+
+Executes a transaction once its proposal has reachen threshold.
+
+### Syntax
+
+```bash
+vault-transaction-execute --rpc-url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_PATH> --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index <TRANSACTION_INDEX>
+```
+
+### Parameters
+
+- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
+- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
+- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
+- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
+- `--transaction-index <TRANSACTION_INDEX>`: The index of the transaction to be executed.
+
+### Example Usage
+
+```bash
+vault-transaction-execute --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index 1
+```
+
+This example executes the transaction at index 1 in the specified multisig.
+
+```console
+👀 You're about to execute a vault transaction, please review the details:
+
+RPC Cluster URL:   https://api.devnet.solana.com
+Program ID:        SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Your Public Key:       AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+
+⚙️ Config Parameters
+Multisig Key:       3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+Transaction Index:       1
+
+Do you want to proceed? yes
+
+Multisig Account:  SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+⠚ Sending transaction...                                                                                                                                                                    🔐 SECURITY-CRITICAL ACCOUNT ROLES:
+  🛡️  Mutable Signers (Can modify state AND sign):
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  🔒 Read-Only Signers (Can view but not modify state):
+  ⚠️  Mutable Unsigned (Can modify state but don't sign):
+    - 24iiwyZYoWWHwJpF8wBG8GH8kzvTLpeAkeUhsHaRc2Sq
+    - 2z9yxtP7bPARjRXPAeiR7HAR2onSP8UBtXABX9qQXKSK
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG
+    - HPDP1S4SW6bjzzAApdMu9PjRjYDytkqZe443DvjTXiD9
+  👀 Read-Only Unsigned (Can view state but don't sign):
+    - ComputeBudget111111111111111111111111111111
+    - SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+    - TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+    - 9pZA68kxFun6bVuxsC55i9thTtnZ9woC3B3Y1PZtRVnr
+
+🔍 INSPECTING SQUADS INSTRUCTIONS:
+
+🛡️ SQUADS INSTRUCTION #3
+  Program ID: SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+  📛 Instruction: vaultTransactionExecute
+  🔑 Accounts Involved:
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5: member (MUTABLE SIGNER)
+    - 9pZA68kxFun6bVuxsC55i9thTtnZ9woC3B3Y1PZtRVnr: transaction (READONLY UNSIGNED)
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG: proposal (MUTABLE UNSIGNED)
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb: multisig (READONLY UNSIGNED)
+  🔓 Decoded Arguments:
+{}
+⠠ Sending transaction...                                                                                                                                                                    Transaction confirmed: 4WKtxAXsP27959JKnLWRh66MtaSARA3B9dx4oLgAAJgMPm4iksyhaoUKhD5ejXkyPBTaaeqK9r1B3A52ov6UWrRT
+
+
+✅ Executed Vault Transaction. Signature: 4WKtxAXsP27959JKnLWRh66MtaSARA3B9dx4oLgAAJgMPm4iksyhaoUKhD5ejXkyPBTaaeqK9r1B3A52ov6UWrRT
+```
+
 ## Vault Transaction Accounts Close
 
 ### Description
@@ -409,30 +488,49 @@ vault-transaction-accounts-close --keypair /path/to/keypair.json --multisig-pubk
 
 In this example, the command closes the transaction accounts for the transaction at index 1 in the specified multisig account and collects rent using the provided rent collector public key.
 
-## Vault Transaction Execute
+```console
+RPC Cluster URL:   https://api.devnet.solana.com
+Program ID:        SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Initializer:       AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
 
-### Description
+⚙️ Config Parameters
 
-Executes a transaction once its proposal has reachen threshold.
+Multisig Key:          3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+Transaction Index:      1
+Rent reclamimer:      AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
 
-### Syntax
+Do you want to proceed? yes
 
-```bash
-vault-transaction-execute --rpc-url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_PATH> --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index <TRANSACTION_INDEX>
+⠄ Sending transaction...                                                                                                                                                                    🔐 SECURITY-CRITICAL ACCOUNT ROLES:
+  🛡️  Mutable Signers (Can modify state AND sign):
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  🔒 Read-Only Signers (Can view but not modify state):
+  ⚠️  Mutable Unsigned (Can modify state but don't sign):
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG
+    - 9pZA68kxFun6bVuxsC55i9thTtnZ9woC3B3Y1PZtRVnr
+  👀 Read-Only Unsigned (Can view state but don't sign):
+    - 11111111111111111111111111111111
+    - ComputeBudget111111111111111111111111111111
+    - SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+
+🔍 INSPECTING SQUADS INSTRUCTIONS:
+
+🛡️ SQUADS INSTRUCTION #2
+  Program ID: SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+  📛 Instruction: vaultTransactionAccountsClose
+  🔑 Accounts Involved:
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb: multisig (READONLY UNSIGNED)
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG: proposal (MUTABLE UNSIGNED)
+    - 11111111111111111111111111111111: systemProgram (READONLY UNSIGNED)
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5: rentCollector (MUTABLE SIGNER)
+    - 9pZA68kxFun6bVuxsC55i9thTtnZ9woC3B3Y1PZtRVnr: transaction (MUTABLE UNSIGNED)
+  🔓 Decoded Arguments: None
+{}
+⠁ Sending transaction...                                                                                                                                                                    Transaction confirmed: 4WeSX1Qd6QPLyeePnDM4GRfXimC8qtXSHnD4TKgMVhso2uhbgGjRDfdEhVsskEmqtg3MfEzmFR2XPjABeXVbrc9A
+
+
+✅ Collected rent for transaction. Signature: 4WeSX1Qd6QPLyeePnDM4GRfXimC8qtXSHnD4TKgMVhso2uhbgGjRDfdEhVsskEmqtg3MfEzmFR2XPjABeXVbrc9A
+
 ```
 
-### Parameters
-
-- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
-- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
-- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
-- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
-- `--transaction-index <TRANSACTION_INDEX>`: The index of the transaction to be executed.
-
-### Example Usage
-
-```bash
-vault-transaction-execute --keypair /path/to/keypair.json --multisig-pubkey <MULTISIG_PUBLIC_KEY> --transaction-index 1
-```
-
-This example executes the transaction at index 1 in the specified multisig.
