@@ -335,6 +335,51 @@ proposal-vote --rpc_url <RPC_URL> --program-id <PROGRAM_ID> --keypair <KEYPAIR_P
    ```
    Cancels the transaction at index 1 in the multisig account.
 
+   ```console
+   
+RPC Cluster URL:   https://api.devnet.solana.com
+Program ID:        SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Your Public Key:       AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+
+⚙️ Config Parameters
+Multisig Key:       3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+Transaction Index:       1
+Vote Type:       ap
+
+Do you want to proceed? yes
+
+⠤ Sending transaction...                                                                                                                                                                    🔐 SECURITY-CRITICAL ACCOUNT ROLES:
+  🛡️  Mutable Signers (Can modify state AND sign):
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  🔒 Read-Only Signers (Can view but not modify state):
+  ⚠️  Mutable Unsigned (Can modify state but don't sign):
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG
+  👀 Read-Only Unsigned (Can view state but don't sign):
+    - ComputeBudget111111111111111111111111111111
+    - SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb
+
+🔍 INSPECTING SQUADS INSTRUCTIONS:
+
+🛡️ SQUADS INSTRUCTION #2
+  Program ID: SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+  📛 Instruction: proposalApprove
+  🔑 Accounts Involved:
+    - 32VejooGNcswcQHeTGhkPMauHyXKeXwJKoWCCvAHKCZG: proposal (MUTABLE UNSIGNED)
+    - 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb: multisig (READONLY UNSIGNED)
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5: member (MUTABLE SIGNER)
+  🔓 Decoded Arguments:
+{
+  "args": {
+    "memo": null
+  }
+}
+⠁ Sending transaction...                                                                                                                                                                    Transaction confirmed: 42hDTuzRDPQoSeCXQHdr6QnsUiUN7T85y6zAn8h9XEcArhrdgTsoaDzF3qtkHomPNhU35SL6nWt7HdviNTDSg9fe
+
+
+✅ Casted ap vote. Signature: 42hDTuzRDPQoSeCXQHdr6QnsUiUN7T85y6zAn8h9XEcArhrdgTsoaDzF3qtkHomPNhU35SL6nWt7HdviNTDSg9fe
+
+   ```
 ## Vault Transaction Accounts Close
 
 ### Description
