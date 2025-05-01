@@ -3606,7 +3606,7 @@ dependencies = [
 
 [[package]]
 name = "secure-squads"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anchor-lang 0.31.1",
  "bincode 2.0.1",
