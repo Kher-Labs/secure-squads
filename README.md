@@ -10,6 +10,7 @@ Overview
 3. [Commands](#3-commands)
    - [Create multisig](#multisig-create)
    - [Initiate Transfer](#initiate-transfer)
+   - [Display Transaction](#display-transaction)
    - [Vote on proposals](#proposal-vote)
    - [Execute Vault Transaction](#vault-transaction-execute)
    - [Reclaim Vault Transaction rent](#vault-transaction-accounts-close)
@@ -288,8 +289,60 @@ parse toke ix info {"amount":"10000","destination":"2z9yxtP7bPARjRXPAeiR7HAR2onS
 ✅ Transaction created successfully. Signature: zmecHjVw8Gw36EWMqEubTNimt73W4cHEZ4T5dhwiimsStN1EX61eXoGuRT6TYPML2JoWjqtayaK6gSb3yaVetWW
 
 ```
+## Display Transaction
 
-   
+### Description
+
+Members can view the proposed transaction.
+
+### Syntax
+
+```bash
+display-transaction --multisig-address <MULTISIG_PUBLIC_KEY>  --transaction-index  <TRANSACTION_INDEX> --rpc-url <RPC_URL>
+```
+
+### Parameters
+
+- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
+- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
+- `--transaction-index <TRANSACTION_INDEX>`: The index of the transaction to vote on.
+
+```console
+tx: 2SABXxYziRRjok9ntaxSnCuBa5mRNXkE9NEH3rv18MTy
+Transaction is proposed by: AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  Additional Signers: None
+🔍 Address Table Lookups: None
+Multisig Account:  SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Parsed Accounts:
+  0: ParsedAccount { pubkey: "382Kh73wxLBDgweonAZfcac2j2jNuTV2ZFuFQ31gWzPK", writable: true, signer: true, source: Some(Transaction) }
+  1: ParsedAccount { pubkey: "2z9yxtP7bPARjRXPAeiR7HAR2onSP8UBtXABX9qQXKSK", writable: true, signer: false, source: Some(Transaction) }
+  2: ParsedAccount { pubkey: "EGTFQZjhHXVb8ggRZSLsKxGuzNAesKAhJUdUsVcoWpSS", writable: false, signer: false, source: Some(Transaction) }
+  3: ParsedAccount { pubkey: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", writable: false, signer: false, source: Some(Transaction) }
+TransactionMessage:
+  Signers: total=1, writable=1, writable_non_signers=2
+🔒 Account Classification:
+  Mutable Signers: [382Kh73wxLBDgweonAZfcac2j2jNuTV2ZFuFQ31gWzPK]
+  Read-Only Signers: []
+  Mutable Non-Signers: [2z9yxtP7bPARjRXPAeiR7HAR2onSP8UBtXABX9qQXKSK, EGTFQZjhHXVb8ggRZSLsKxGuzNAesKAhJUdUsVcoWpSS]
+  Read-Only Non-Signers: [TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA]
+✅ Instruction #1
+✅ Proposed Instruction:
+  Program: spl-token
+  Program ID: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+  Parsed Data: {
+    info: {
+      amount: "10000"
+      destination: "2z9yxtP7bPARjRXPAeiR7HAR2onSP8UBtXABX9qQXKSK"
+      multisigAuthority: "382Kh73wxLBDgweonAZfcac2j2jNuTV2ZFuFQ31gWzPK"
+      signers: ["382Kh73wxLBDgweonAZfcac2j2jNuTV2ZFuFQ31gWzPK"]
+      source: "EGTFQZjhHXVb8ggRZSLsKxGuzNAesKAhJUdUsVcoWpSS"
+    } 
+    type: transfer
+  } 
+  Stack Height: N/A
+```
+
+
 ## Proposal Vote
 
 ### Description
