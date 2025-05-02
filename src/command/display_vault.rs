@@ -7,6 +7,10 @@ use clap::Args;
 
 #[derive(Args)]
 pub struct DisplayVault {
+    /// RPC URL
+    #[arg(long)]
+    rpc_url: Option<String>,
+
     /// Multisig Program ID
     #[arg(long)]
     program_id: Option<String>,
@@ -24,6 +28,7 @@ impl DisplayVault {
     // vault genrated for (seeds, multisig_address, vault_index)
     pub async fn execute(self) -> eyre::Result<()> {
         let Self {
+            rpc_url,
             program_id,
             multisig_address,
             vault_index,
@@ -43,7 +48,7 @@ impl DisplayVault {
 
         println!("Vault: {:?}", vault_address.0);
         // Initialize RPC client
-        let rpc_url = "https://api.devnet.solana.com "; // Replace with your desired cluster
+        let rpc_url = rpc_url.unwrap_or_else(|| "https://api.mainnet-beta.solana.com".to_string());
         let rpc_client = RpcClient::new(rpc_url.to_string());
 
         match rpc_client.get_balance(&vault_address.0).await {
