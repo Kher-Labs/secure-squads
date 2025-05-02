@@ -1,3 +1,4 @@
+use crate::command::display_transaction::DisplayTransaction;
 use crate::command::display_vault::DisplayVault;
 use crate::command::initiate_transfer::InitiateTransfer;
 use crate::command::multisig_create::MultisigCreate;
@@ -6,6 +7,7 @@ use crate::command::vault_transaction_accounts_close::VaultTransactionAccountsCl
 use crate::command::vault_transaction_execute::VaultTransactionExecute;
 use clap::Subcommand;
 
+pub mod display_transaction;
 pub mod display_vault;
 pub mod initiate_transfer;
 pub mod multisig_create;
@@ -21,4 +23,5 @@ pub enum Command {
     ProposalVote(ProposalVote),
     VaultTransactionExecute(VaultTransactionExecute),
     VaultTransactionAccountsClose(VaultTransactionAccountsClose),
+    DisplayTransaction(DisplayTransaction),
 }

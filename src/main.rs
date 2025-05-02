@@ -22,5 +22,6 @@ async fn main() -> eyre::Result<()> {
         Command::ProposalVote(command) => command.execute().await,
         Command::VaultTransactionExecute(command) => command.execute().await,
         Command::VaultTransactionAccountsClose(command) => command.execute().await,
+        Command::DisplayTransaction(command) => command.execute().await,
     }
 }
