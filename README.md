@@ -9,6 +9,7 @@ Overview
 2. [Supported wallets](#2-supported-wallets)
 3. [Commands](#3-commands)
    - [Create multisig](#multisig-create)
+   - [Display Vault](#display-vault)
    - [Initiate Transfer](#initiate-transfer)
    - [Display Transaction](#display-transaction)
    - [Vote on proposals](#proposal-vote)
@@ -178,6 +179,32 @@ Do you want to proceed? yes
 ✅ Created Multisig: 3dVd1QQ4nTfCZUoq4jCdx7aforCNkLrmrsb5Y7a7PiTb. Signature: 58fV2i4rWWg8GoCbha9q39YdzdxTTtZe5dGaWGNN2rc5r3nzCnAETTijA5NEVzbM8MYWHyBVurrHyXZr4EJ3Mbf8
 
 ```
+
+## Display Vault
+
+### Description
+
+View your multisig vaults address ,for deposit or other activites
+
+### Syntax
+
+```bash
+display-vault --rpc-url <RPC_URL>  --multisig-address <MULTISIG_ADDRESS> --vault-index <VAULT_INDEX> --program-id <PROGRAM_ID>
+```
+### Parameters
+
+- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
+- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
+- `--multisig-address <MULTISIG_ADDRESS>`: The public key of the multisig account.
+- `-vault-index <VAULT_INDEX> `: Index of the Vault
+
+### Example Usage
+
+```console
+Vault: 382Kh73wxLBDgweonAZfcac2j2jNuTV2ZFuFQ31gWzPK
+Vault SOL Balance: 0 lamports
+```
+
 ## Initiate Transfer
 
 ### Description
