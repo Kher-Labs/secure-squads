@@ -11,6 +11,7 @@ Overview
    - [Create multisig](#multisig-create)
    - [Display Vault](#display-vault)
    - [Initiate Transfer](#initiate-transfer)
+   - [Initiate  Program Upgrade](#initiate-program-upgrade)
    - [Display Transaction](#display-transaction)
    - [Vote on proposals](#proposal-vote)
    - [Execute Vault Transaction](#vault-transaction-execute)
@@ -316,6 +317,104 @@ parse toke ix info {"amount":"10000","destination":"2z9yxtP7bPARjRXPAeiR7HAR2onS
 ✅ Transaction created successfully. Signature: zmecHjVw8Gw36EWMqEubTNimt73W4cHEZ4T5dhwiimsStN1EX61eXoGuRT6TYPML2JoWjqtayaK6gSb3yaVetWW
 
 ```
+
+## Initiate Program Upgrade
+
+### Description
+
+Upgradee code of a program through solana upgrade instruction
+
+### Syntax
+
+```bash
+initiate-program-upgrade --rpc-url https://api.devnet.solana.com --keypair /home/mubariz/Documents/SolDev/squads-cli-demo/mem1.json --multisig-pubkey CjSFofLapRTkkRqpBeXcMMSVsxE5VNQHEMzV7PDhmprj --vault-index 1 --spill-address ap5oPFPVSnxtc8bbvcCeKwy9Xnu5NePhMGzX2hexDVh --program-to-upgrade-id AsTD7FJ57Cwn1MRdp3B5etLeSDA2PasnUttLR9Ys6e5s --buffer-address 2BpHkRfgKhibQtcccuSLRMGiFXhzc36AfHoKpned8HGF
+```
+### Parameters
+
+- `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
+- `--program-id <PROGRAM_ID>`: (Optional) The ID of the multisig program. Defaults to a standard ID if not specified.
+- `--keypair <KEYPAIR_PATH>`: Path to your keypair file.
+- `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
+- `--vault-index <VAULT_INDEX> `: Index of the Vault
+- `--spill-address <SPILL_ADDRESS>`:adress to send execessive sol from upgrade
+- `buffer-address <BUFFER ADDRESS`:account that holds new program code
+
+### Example Usage
+
+```console
+👀 You're about to initiate a proposal and a vault transaction to upgrade your program from a buffer, please review the details:
+
+RPC Cluster URL:   https://api.devnet.solana.com
+Program ID:        SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Your Public Key:       AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+
+⚙️ Config Parameters
+Multisig Key:       CjSFofLapRTkkRqpBeXcMMSVsxE5VNQHEMzV7PDhmprj
+Transaction Index:       3
+Vault Index:       1
+To upgrade program ID:       AsTD7FJ57Cwn1MRdp3B5etLeSDA2PasnUttLR9Ys6e5s
+Buffer Address:       2BpHkRfgKhibQtcccuSLRMGiFXhzc36AfHoKpned8HGF
+Spill Address:       ap5oPFPVSnxtc8bbvcCeKwy9Xnu5NePhMGzX2hexDVh
+
+Do you want to proceed? yes
+
+⠚ Sending transaction...                                                                                                                                    🔐 SECURITY-CRITICAL ACCOUNT ROLES:
+  🛡️  Mutable Signers (Can modify state AND sign):
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  🔒 Read-Only Signers (Can view but not modify state):
+  ⚠️  Mutable Unsigned (Can modify state but don't sign):
+    - 2fF4MJKU65DRZXRa9BvpmQZh3bDJk3XzJgUbiQnK7GkS
+    - 32tfascj75Ef6FRCKqvrGMPCExtxzoyT6syUQmHE9zvL
+    - CjSFofLapRTkkRqpBeXcMMSVsxE5VNQHEMzV7PDhmprj
+  👀 Read-Only Unsigned (Can view state but don't sign):
+    - 11111111111111111111111111111111
+    - ComputeBudget111111111111111111111111111111
+    - SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+
+🔍 INSPECTING SQUADS INSTRUCTIONS:
+
+🛡️ SQUADS INSTRUCTION #2
+  Program ID: SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+  📛 Instruction: vaultTransactionCreate
+  🔑 Accounts Involved:
+    - CjSFofLapRTkkRqpBeXcMMSVsxE5VNQHEMzV7PDhmprj: multisig (MUTABLE UNSIGNED)
+    - 2fF4MJKU65DRZXRa9BvpmQZh3bDJk3XzJgUbiQnK7GkS: transaction (MUTABLE UNSIGNED)
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5: rentPayer (MUTABLE SIGNER)
+    - 11111111111111111111111111111111: systemProgram (READONLY UNSIGNED)
+  🔓 Decoded Arguments:
+{
+  "args": {
+    "ephemeralSigners": 0,
+    "memo": null,
+    "transactionMessage": [
+      1,
+      1,
+      ----
+      0,
+      0
+    ],
+    "vaultIndex": 1
+  }
+}
+
+🛡️ SQUADS INSTRUCTION #3
+  Program ID: SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+  📛 Instruction: proposalCreate
+  🔑 Accounts Involved:
+    - 11111111111111111111111111111111: systemProgram (READONLY UNSIGNED)
+    - AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5: rentPayer (MUTABLE SIGNER)
+    - 32tfascj75Ef6FRCKqvrGMPCExtxzoyT6syUQmHE9zvL: proposal (MUTABLE UNSIGNED)
+    - CjSFofLapRTkkRqpBeXcMMSVsxE5VNQHEMzV7PDhmprj: multisig (MUTABLE UNSIGNED)
+  🔓 Decoded Arguments:
+{
+  "args": {
+    "draft": false,
+    "transactionIndex": 3
+  }
+}
+```
+  
+  
 ## Display Transaction
 
 ### Description
@@ -333,6 +432,8 @@ display-transaction --multisig-address <MULTISIG_PUBLIC_KEY>  --transaction-inde
 - `--rpc-url <RPC_URL>`: (Optional) The URL of the Solana RPC endpoint. Defaults to mainnet if not specified.
 - `--multisig-pubkey <MULTISIG_PUBLIC_KEY>`: The public key of the multisig account.
 - `--transaction-index <TRANSACTION_INDEX>`: The index of the transaction to vote on.
+
+  
 
 ```console
 tx: 2SABXxYziRRjok9ntaxSnCuBa5mRNXkE9NEH3rv18MTy
@@ -368,7 +469,46 @@ TransactionMessage:
   } 
   Stack Height: N/A
 ```
-
+```console
+tx: 2fF4MJKU65DRZXRa9BvpmQZh3bDJk3XzJgUbiQnK7GkS
+Transaction is proposed by: AgZ9okAAA7sHz6ddJnuq6RFHXuEQZt3CgBZsNGHByjq5
+  Additional Signers: None
+🔍 Address Table Lookups: None
+Multisig Account:  SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf
+Parsed Accounts:
+  0: ParsedAccount { pubkey: "7TxpVEhmXJ28zmGNHnividgjXmpereR5Nza9TBjpvwsq", writable: true, signer: true, source: Some(Transaction) }
+  1: ParsedAccount { pubkey: "ap5oPFPVSnxtc8bbvcCeKwy9Xnu5NePhMGzX2hexDVh", writable: true, signer: false, source: Some(Transaction) }
+  2: ParsedAccount { pubkey: "2BpHkRfgKhibQtcccuSLRMGiFXhzc36AfHoKpned8HGF", writable: true, signer: false, source: Some(Transaction) }
+  3: ParsedAccount { pubkey: "AsTD7FJ57Cwn1MRdp3B5etLeSDA2PasnUttLR9Ys6e5s", writable: true, signer: false, source: Some(Transaction) }
+  4: ParsedAccount { pubkey: "D5i47SuNuuqxGBHN1KYDWkehAUyePngvCsJskBPW7kJF", writable: false, signer: false, source: Some(Transaction) }
+  5: ParsedAccount { pubkey: "BPFLoaderUpgradeab1e11111111111111111111111", writable: false, signer: false, source: Some(Transaction) }
+  6: ParsedAccount { pubkey: "SysvarC1ock11111111111111111111111111111111", writable: false, signer: false, source: Some(Transaction) }
+  7: ParsedAccount { pubkey: "SysvarRent111111111111111111111111111111111", writable: false, signer: false, source: Some(Transaction) }
+TransactionMessage:
+  Signers: total=1, writable=1, writable_non_signers=4
+🔒 Account Classification:
+  Mutable Signers: [7TxpVEhmXJ28zmGNHnividgjXmpereR5Nza9TBjpvwsq]
+  Read-Only Signers: []
+  Mutable Non-Signers: [ap5oPFPVSnxtc8bbvcCeKwy9Xnu5NePhMGzX2hexDVh, 2BpHkRfgKhibQtcccuSLRMGiFXhzc36AfHoKpned8HGF, AsTD7FJ57Cwn1MRdp3B5etLeSDA2PasnUttLR9Ys6e5s, D5i47SuNuuqxGBHN1KYDWkehAUyePngvCsJskBPW7kJF]
+  Read-Only Non-Signers: [BPFLoaderUpgradeab1e11111111111111111111111, SysvarC1ock11111111111111111111111111111111, SysvarRent111111111111111111111111111111111]
+✅ Instruction #1
+✅ Proposed Instruction:
+  Program: bpf-upgradeable-loader
+  Program ID: BPFLoaderUpgradeab1e11111111111111111111111
+  Parsed Data: {
+    info: {
+      authority: "7TxpVEhmXJ28zmGNHnividgjXmpereR5Nza9TBjpvwsq"
+      bufferAccount: "2BpHkRfgKhibQtcccuSLRMGiFXhzc36AfHoKpned8HGF"
+      clockSysvar: "SysvarC1ock11111111111111111111111111111111"
+      programAccount: "AsTD7FJ57Cwn1MRdp3B5etLeSDA2PasnUttLR9Ys6e5s"
+      programDataAccount: "D5i47SuNuuqxGBHN1KYDWkehAUyePngvCsJskBPW7kJF"
+      rentSysvar: "SysvarRent111111111111111111111111111111111"
+      spillAccount: "ap5oPFPVSnxtc8bbvcCeKwy9Xnu5NePhMGzX2hexDVh"
+    } 
+    type: upgrade
+  } 
+  Stack Height: N/A
+```
 
 ## Proposal Vote
 
