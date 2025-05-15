@@ -71,7 +71,6 @@ impl DisplayTransaction {
         let transaction_pda =
             get_transaction_pda(&multisig_address, transaction_index, Some(&program_id));
 
-        println!("Transaction -> {:?}", transaction_pda.0);
         // Initialize RPC client
         let rpc_url = rpc_url.unwrap_or_else(|| "https://api.mainnet-beta.solana.com".to_string());
         let rpc_client = RpcClient::new(rpc_url.to_string());
@@ -113,55 +112,10 @@ impl DisplayTransaction {
         } else {
             println!("🔍 Address Table Lookups: None");
         }
-        /*
-        pub struct LoadedMessage<'a> {
-            pub message: Cow<'a, Message>,
-            pub loaded_addresses: Cow<'a, LoadedAddresses>,
-            pub is_writable_account_cache: Vec<bool>,
-        }
-            constuct a load message object for our tx , so that i can use parse_account();
-        */
+
         let multisig_account = rpc_client.get_account(&multisig_address).await.unwrap();
         println!("Multisig Account:  {}", multisig_account.owner);
-        let transaction_account_data = rpc_client
-            .get_account(&transaction_pda.0)
-            .await
-            .expect("Failed to get transaction account")
-            .data;
-        // let v0message: Cow<'_, Message> = Cow::Owned(into_v0_message(transaction_message.clone()));
-        // let reserved_account_keys = &HashSet::default();
 
-        let vault_pda = get_vault_pda(
-            &multisig_address,
-            deserialized_account_data.vault_index,
-            Some(&program_id),
-        );
-        // in general remaning accoutn metas
-        let (account_metas, address_lookup_table_accounts) = message_to_execute_account_metas(
-            &rpc_client,
-            transaction_message.clone(),
-            deserialized_account_data.ephemeral_signer_bumps.clone(),
-            &vault_pda.0,
-            &transaction_pda.0,
-            Some(&program_id),
-        )
-        .await;
-        /*
-                // Extract loaded addresses
-                let loaded_addresses =
-                    extract_loaded_addresses(&address_lookup_table_accounts, &transaction_message);
-                let loaded_message = solana_sdk::message::v0::LoadedMessage::new(
-                    v0message.into_owned(),
-                    loaded_addresses,
-                    //  &reserved_account_keys,
-                );
-                let parsed_accounts = parse_v0_message_accounts(&loaded_message);
-
-                println!("Parsed Accounts:");
-                for (i, account) in parsed_accounts.iter().enumerate() {
-                    println!("  {}: {:?}", i, account);
-                }
-        */
         println!("TransactionMessage:");
         println!(
             "  Signers: total={}, writable={}, writable_non_signers={}",
