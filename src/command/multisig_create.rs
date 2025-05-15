@@ -1,6 +1,8 @@
+use bincode;
 use clap::Args;
 use colored::Colorize;
 use dialoguer::Confirm;
+use hex;
 use indicatif::ProgressBar;
 use solana_sdk::compute_budget::ComputeBudgetInstruction;
 use solana_sdk::instruction::Instruction;
@@ -217,6 +219,9 @@ impl MultisigCreate {
         )
         .unwrap();
 
+        let message_hex = hex::encode(message.serialize());
+
+        println!("Hex message: {}", message_hex);
         let transaction = VersionedTransaction::try_new(
             VersionedMessage::V0(message),
             &[

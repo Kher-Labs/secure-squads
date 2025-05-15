@@ -1,8 +1,11 @@
 use clap::Args;
 use colored::Colorize;
+use eyre::eyre;
 use serde_json::Value;
 use serde_json::to_string_pretty;
+use solana_program::address_lookup_table::state::AddressLookupTable;
 use solana_sdk::instruction::CompiledInstruction;
+use solana_sdk::loader_instruction;
 use solana_sdk::message::v0::LoadedAddresses;
 use solana_sdk::message::v0::MessageAddressTableLookup;
 use solana_sdk::message::{AccountKeys, VersionedMessage};
@@ -68,7 +71,7 @@ impl DisplayTransaction {
         let transaction_pda =
             get_transaction_pda(&multisig_address, transaction_index, Some(&program_id));
 
-        println!("tx: {:?}", transaction_pda.0);
+        println!("Transaction -> {:?}", transaction_pda.0);
         // Initialize RPC client
         let rpc_url = rpc_url.unwrap_or_else(|| "https://api.mainnet-beta.solana.com".to_string());
         let rpc_client = RpcClient::new(rpc_url.to_string());
@@ -84,6 +87,8 @@ impl DisplayTransaction {
             VaultTransaction::try_deserialize(&mut transaction_account_data_slice).unwrap();
 
         let transaction_message = deserialized_account_data.message;
+
+        println!("Transaction -> {:?}", transaction_pda.0);
         println!(
             "Transaction is proposed by: {}",
             deserialized_account_data.creator.to_string().bright_green()
@@ -123,8 +128,7 @@ impl DisplayTransaction {
             .await
             .expect("Failed to get transaction account")
             .data;
-        let v0message: Cow<'_, Message> = Cow::Owned(into_v0_message(transaction_message.clone()));
-
+        // let v0message: Cow<'_, Message> = Cow::Owned(into_v0_message(transaction_message.clone()));
         // let reserved_account_keys = &HashSet::default();
 
         let vault_pda = get_vault_pda(
@@ -136,28 +140,28 @@ impl DisplayTransaction {
         let (account_metas, address_lookup_table_accounts) = message_to_execute_account_metas(
             &rpc_client,
             transaction_message.clone(),
-            deserialized_account_data.ephemeral_signer_bumps,
+            deserialized_account_data.ephemeral_signer_bumps.clone(),
             &vault_pda.0,
             &transaction_pda.0,
             Some(&program_id),
         )
         .await;
+        /*
+                // Extract loaded addresses
+                let loaded_addresses =
+                    extract_loaded_addresses(&address_lookup_table_accounts, &transaction_message);
+                let loaded_message = solana_sdk::message::v0::LoadedMessage::new(
+                    v0message.into_owned(),
+                    loaded_addresses,
+                    //  &reserved_account_keys,
+                );
+                let parsed_accounts = parse_v0_message_accounts(&loaded_message);
 
-        // Extract loaded addresses
-        let loaded_addresses =
-            extract_loaded_addresses(&address_lookup_table_accounts, &transaction_message);
-        let loaded_message = solana_sdk::message::v0::LoadedMessage::new(
-            v0message.into_owned(),
-            loaded_addresses,
-            //  &reserved_account_keys,
-        );
-        let parsed_accounts = parse_v0_message_accounts(&loaded_message);
-
-        println!("Parsed Accounts:");
-        for (i, account) in parsed_accounts.iter().enumerate() {
-            println!("  {}: {:?}", i, account);
-        }
-
+                println!("Parsed Accounts:");
+                for (i, account) in parsed_accounts.iter().enumerate() {
+                    println!("  {}: {:?}", i, account);
+                }
+        */
         println!("TransactionMessage:");
         println!(
             "  Signers: total={}, writable={}, writable_non_signers={}",
@@ -298,8 +302,183 @@ impl DisplayTransaction {
                 }
             }
         }
+
+        let static_accounts: Vec<Pubkey> = transaction_message.account_keys.clone();
+
+        let mut writable_accounts: Vec<Pubkey> = Vec::new();
+        let mut readonly_accounts: Vec<Pubkey> = Vec::new();
+        for lookup in &transaction_message.address_table_lookups {
+            let lookup_table_key = &lookup.account_key;
+            let account = rpc_client.get_account(lookup_table_key).await?;
+            let lookup_table = AddressLookupTable::deserialize(&account.data)?;
+            for &index_in_lookup_table in &lookup.writable_indexes {
+                let pubkey = lookup_table
+                    .addresses
+                    .get(index_in_lookup_table as usize)
+                    .ok_or_else(|| eyre!("Invalid index in lookup table"))?;
+                writable_accounts.push(*pubkey);
+            }
+
+            // Resolve readonly accounts
+            for &index_in_lookup_table in &lookup.readonly_indexes {
+                let pubkey = lookup_table
+                    .addresses
+                    .get(index_in_lookup_table as usize)
+                    .ok_or_else(|| eyre!("Invalid index in lookup table"))?;
+                readonly_accounts.push(*pubkey);
+            }
+        }
+
+        let mut resolved_accounts: Vec<Pubkey> = transaction_message.account_keys.clone();
+
+        for lookup in &transaction_message.address_table_lookups {
+            let lookup_table_key = &lookup.account_key;
+            let account = rpc_client.get_account(lookup_table_key).await?;
+            let lookup_table = AddressLookupTable::deserialize(&account.data)?;
+
+            for &index_in_lookup_table in &lookup.writable_indexes {
+                let pubkey = lookup_table
+                    .addresses
+                    .get(index_in_lookup_table as usize)
+                    .ok_or_else(|| eyre!("Invalid index in lookup table"))?;
+                resolved_accounts.push(*pubkey);
+            }
+
+            for &index_in_lookup_table in &lookup.readonly_indexes {
+                let pubkey = lookup_table
+                    .addresses
+                    .get(index_in_lookup_table as usize)
+                    .ok_or_else(|| eyre!("Invalid index in lookup table"))?;
+                resolved_accounts.push(*pubkey);
+            }
+        }
+        let mut cpi_calls = Vec::new();
+        for compiled_instruction in transaction_message.instructions.iter() {
+            let program_id_index = usize::from(compiled_instruction.program_id_index);
+            let program_id = resolved_accounts[program_id_index];
+
+            let accounts: Vec<AccountMeta> = compiled_instruction
+                .account_indexes
+                .iter()
+                .map(|&account_index| {
+                    let account_index = usize::from(account_index);
+                    let pubkey = resolved_accounts[account_index];
+                    let is_writable = is_writable_index(
+                        &writable_accounts,
+                        &static_accounts,
+                        &transaction_message,
+                        account_index,
+                    );
+                    let is_signer = transaction_message.is_signer_index(account_index);
+
+                    if is_writable {
+                        AccountMeta::new(pubkey, is_signer)
+                    } else {
+                        AccountMeta::new_readonly(pubkey, is_signer)
+                    }
+                })
+                .collect();
+
+            let instruction = solana_sdk::instruction::Instruction {
+                program_id,
+                accounts,
+                data: compiled_instruction.data.clone(),
+            };
+
+            cpi_calls.push(instruction);
+        }
+        println!("CPI Calls:");
+        for (i, cpi_call) in cpi_calls.iter().enumerate() {
+            println!("  {}: {:?}", i + 1, cpi_call);
+        }
+        pub const SEED_PREFIX: &[u8] = &[109, 117, 108, 116, 105, 115, 105, 103];
+        pub const SEED_VAULT: &[u8] = &[118, 97, 117, 108, 116];
+        let vault_seeds = &[
+            SEED_PREFIX,
+            multisig_address.as_ref(),
+            SEED_VAULT,
+            &deserialized_account_data.vault_index.to_le_bytes(),
+            &[deserialized_account_data.vault_bump],
+        ];
+
+        let ephemeral_signer_bumps = deserialized_account_data.ephemeral_signer_bumps.clone();
+        let transaction_key = transaction_pda.0;
+        let (ephemeral_signer_keys, ephemeral_signer_seeds) = derive_ephemeral_signers_offchain(
+            transaction_key,
+            &ephemeral_signer_bumps,
+            &program_id,
+        );
+        let ephemeral_signer_seeds = &ephemeral_signer_seeds
+            .iter()
+            .map(|seeds| seeds.iter().map(Vec::as_slice).collect::<Vec<&[u8]>>())
+            .collect::<Vec<Vec<&[u8]>>>();
+        let mut signer_seeds = ephemeral_signer_seeds
+            .iter()
+            .map(Vec::as_slice)
+            .collect::<Vec<&[&[u8]]>>();
+        // Add the vault seeds.
+        signer_seeds.push(&*vault_seeds);
+        // print signer seeds
+        println!("Signer Seeds:");
+        for (i, signer_seed) in signer_seeds.iter().enumerate() {
+            println!("  {}: {:?}", i + 1, signer_seed);
+        }
+
         Ok(())
     }
+}
+pub fn derive_ephemeral_signers_offchain(
+    transaction_key: Pubkey,
+    ephemeral_signer_bumps: &[u8],
+    program_id: &Pubkey,
+) -> (Vec<Pubkey>, Vec<Vec<Vec<u8>>>) {
+    ephemeral_signer_bumps
+        .iter()
+        .enumerate()
+        .map(|(index, bump)| {
+            pub const SEED_PREFIX: &[u8] = &[109, 117, 108, 116, 105, 115, 105, 103];
+            pub const SEED_VAULT: &[u8] = &[118, 97, 117, 108, 116];
+            pub const SEED_EPHEMERAL_SIGNER: &[u8] = &[
+                101, 112, 104, 101, 109, 101, 114, 97, 108, 95, 115, 105, 103, 110, 101, 114,
+            ];
+            let seeds = vec![
+                SEED_PREFIX.to_vec(),
+                transaction_key.to_bytes().to_vec(),
+                SEED_EPHEMERAL_SIGNER.to_vec(),
+                u8::try_from(index).unwrap().to_le_bytes().to_vec(),
+                vec![*bump],
+            ];
+
+            (
+                Pubkey::create_program_address(
+                    &seeds.iter().map(Vec::as_slice).collect::<Vec<&[u8]>>(),
+                    program_id,
+                )
+                .unwrap(),
+                seeds,
+            )
+        })
+        .unzip()
+}
+fn is_writable_index(
+    loaded_writable_accounts: &Vec<Pubkey>,
+    static_accounts: &Vec<Pubkey>,
+    message: &VaultTransactionMessage,
+    index: usize,
+) -> bool {
+    if message.is_static_writable_index(index) {
+        return true;
+    }
+
+    if index < static_accounts.len() {
+        // Index is within static accounts but is not writable.
+        return false;
+    }
+
+    // "Skip" the static account indexes.
+    let index = index - static_accounts.len();
+
+    index < loaded_writable_accounts.len()
 }
 fn convert_to_compiled_instruction(
     multisig_instruction: &MultisigCompiledInstruction,

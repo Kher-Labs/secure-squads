@@ -214,7 +214,9 @@ impl InitiateProgramUpgrade {
             blockhash,
         )
         .unwrap();
+        let message_hex = hex::encode(message.serialize());
 
+        println!("Hex message: {}", message_hex);
         let transaction = VersionedTransaction::try_new(
             VersionedMessage::V0(message),
             &[&*transaction_creator_keypair],
